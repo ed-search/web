@@ -1,0 +1,35 @@
+{
+  "name": "ed-search-web",
+  "version": "0.0.1",
+  "description": "Le site internet avec le moteur de recherche en full JS",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "typings install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ed-search/web.git"
+  },
+  "author": "Jonathan Bouzekri",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/ed-search/web/issues"
+  },
+  "homepage": "https://github.com/ed-search/web#readme",
+  "devDependencies": {
+    "browser-sync": "^2.13.0",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.2",
+    "gulp-debug": "^2.1.2",
+    "gulp-flatten": "^0.3.0",
+    "gulp-typescript": "^2.13.6",
+    "require-dir": "^0.3.0",
+    "run-sequence": "^1.2.1",
+    "typescript": "^1.8.10",
+    "typings": "^1.3.0"
+  },
+  "dependencies": {
+    "lunr": "^0.7.1"
+  }
+}
