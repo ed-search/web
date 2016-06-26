@@ -14,6 +14,7 @@ function reload(task) {
 
 gulp.task('watch', function() {
   gulp.watch("src/**/*.html", reload('build.html'));
+  gulp.watch("src/**/*.scss", reload('build.css'));
   gulp.watch("src/site/**/*.js", reload('build.js.site'));
   gulp.watch("src/worker/**/*.js", reload('build.js.worker'));
 });
