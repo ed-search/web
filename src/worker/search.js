@@ -1,3 +1,3 @@
-lunr(function(){})
+//lunr(function(){})
 
 console.log('worker');

@@ -1,5 +1,0 @@
-{
-  "globalDependencies": {
-    "lunr": "registry:dt/lunr#0.5.4+20160326120315"
-  }
-}

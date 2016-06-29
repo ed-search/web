@@ -13,6 +13,7 @@ gulp.task('build', function() {
   return runSequence(
     'clean',
     'build.html',
+    'copy',
     'build.js.site',
     'build.js.worker',
     'build.css'
@@ -26,6 +27,7 @@ gulp.task('serve', function() {
   return runSequence(
     'clean',
     'build.html',
+    'copy',
     'build.js.site',
     'build.js.worker',
     'build.css',
@@ -40,6 +42,7 @@ gulp.task('serve.watch', function() {
   return runSequence(
     'clean',
     'build.html',
+    'copy',
     'build.js.site',
     'build.js.worker',
     'build.css',
