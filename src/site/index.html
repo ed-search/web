@@ -1,21 +1,60 @@
 <!DOCTYPE html>
 <html lang="fr">
   <head>
+    <title>Editions Diamond - Search Engine</title>
+    <meta name="description" content="Retrouvez facilement un article dans votre collection.">
+    <link rel="icon" type="image/vnd.microsoft.icon" href="/img/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="main.css">
   </head>
-  <body>
-    <p>Hello world</p>
-    <div id="app" v-cloak>
-      {{loadingProgress}}<br />
-      {{searchResult}}
-      <p v-if="loading">Loading screen</p>
-      <p v-if="!loading">Search component</p>
-    </div>
+  <body id="app" v-cloak>
 
-    <script type="text/javascript" src="js/vue.js"></script>
-    <script type="text/javascript" src="js/rx.lite.js"></script>
-    <script type="text/javascript" src="js/rx.dom.js"></script>
+    <header>
+      <nav v-bind:class="{ 'navbar navbar-default': atLeastOnSearch, 'jumbotron': !atLeastOnSearch }">
+        <img src="img/logo.jpg" />
+        <h1>Search Engine</h1>
+        <p class="">Retrouvez facilement un article dans votre collection</p>
+        <section id="loading" v-if="loading">
+          <div class="">
+            {{ loadingStep }}
+          </div>
+        </section>
+        <section id="search" v-if="!loading">
+          <form novalidate v-on:submit.prevent="onSubmit">
+            <div class="input-group input-group-lg">
+              <input type="text" class="form-control" aria-describedby="sizing-addon1" autofocus>
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+              </span>
+            </div>
+          </form>
+        </section>
+      </nav>
+    </header>
+
+    <main>
+      <section id="results">
+      </section>
+    </main>
+
+    <footer>
+      <nav class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container-fluid">
+          <ul class="nav navbar-nav">
+            <li><a href="https://github.com/ed-search/database">Contribuer</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="http://www.editions-diamond.fr/">Le blog</a></li>
+            <li><a href="https://boutique.ed-diamond.com/">La boutique</a></li>
+          </ul>
+        </div>
+      </nav>
+    </footer>
+
+    <script type="text/javascript" src="js/vue.min.js"></script>
+    <script type="text/javascript" src="js/rx.lite.min.js"></script>
+    <script type="text/javascript" src="js/rx.dom.min.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
   </body>
 </html>

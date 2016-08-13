@@ -1,34 +1,71 @@
+/**
+ * Object used in VueJS Component to bind values to the view
+ *
+ * loading: while true display loading animation
+ * loadingStep: switch loading message (download, indexing)
+ * loadingProgress: update progress bar if supported by loadingStep
+ * atLeastOnSearch: true if the user has started at least one search
+ * searchResult: display search results
+ */
 var appState = {
   loading: true,
-  loadingStep: 'data',
+  loadingStep: 'download',
   loadingProgress: 0,
-  searchResult: 0
+  atLeastOnSearch: false,
+  searchResult: []
+};
+
+function logInfo(message, value, color) {
+  color = color || '#008d4c';
+  var data = ['%cpage', 'color: ' + color, message];
+  if (value) {
+    data.push(value);
+  }
+  console.log.apply(console, data);
+};
+
+function handleError(e) {
+  console.log(e);
 }
 
-// Worker
-var worker = Rx.DOM.fromWorker('js/search.js');
-var workerSharedObservable = worker.share();
+// Create SearchEngine in a WebWorker
+var searchEngineWorker = Rx.DOM.fromWorker('js/search.js');
+var searchEngineSharedObservable = searchEngineWorker.share();
 
-workerSharedObservable.filter(function(item){
+// Listen for loading (database downloading and indexing) messages from SearchEngine WebWorker
+searchEngineSharedObservable.filter(function(item){
   return item.data.event === 'loading';
-}).subscribe(function (e) {
-  appState.loadingProgress = e.data.value;
-});
+}).subscribe(
+  function (e) {
+    logInfo('loading', e.data);
+    appState.loadingProgress = e.data.value;
+    appState.loadingStep = e.data.type;
+    if (appState.loadingStep == 'ready') {  // Final step when SearchEngine is ready
+      appState.loading = false;
+    }
+  },
+  handleError
+);
 
-workerSharedObservable.filter(function(item){
+// Listen for search result messages from SearchEngine WebWorker
+searchEngineSharedObservable.filter(function(item){
   return item.data.event === 'result';
-}).subscribe(function (e) {
-  appState.searchResult = e.data.value;
-});
+}).subscribe(
+  function (e) {
+    logInfo('result', e.data);
+    appState.searchResult = e.data.value;
+  },
+  handleError
+);
 
-worker.onNext('some data');
+// Trigger SearchEngine WebWorker indexation.
+searchEngineWorker.onNext({action: 'startEngine', url: 'https://raw.githubusercontent.com/ed-search/database/data/articles.json'});
 
-var app = new Vue({
+// VueJS component to update HTML when object appState changes
+var appComponent = new Vue({
   el: '#app',
-  data: appState
+  data: appState,
+  methods: {
+    onSubmit: function() {}  // Prevent standard HTML form submit. We use RxJS to watch for input changes
+  }
 });
-
-
-setTimeout(function(){
-  appState.loading = false;
-}, 5000)
