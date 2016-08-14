@@ -6,26 +6,26 @@
     <link rel="icon" type="image/vnd.microsoft.icon" href="/img/favicon.ico" />
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body id="app" v-cloak>
 
     <header>
-      <nav v-bind:class="{ 'navbar navbar-default': atLeastOnSearch, 'jumbotron': !atLeastOnSearch }">
-        <img src="img/logo.jpg" />
+      <nav v-bind:class="{ 'navbar navbar-default': atLeastOneSearch, 'jumbotron': !atLeastOneSearch }">
+        <a href="/"><img src="img/logo.jpg" /></a>
         <h1>Search Engine</h1>
-        <p class="">Retrouvez facilement un article dans votre collection</p>
+        <p>Retrouvez facilement un article dans votre collection</p>
         <section id="loading" v-if="loading">
           <div class="">
             {{ loadingStep }}
           </div>
         </section>
-        <section id="search" v-if="!loading">
-          <form novalidate v-on:submit.prevent="onSubmit">
+        <section id="search" v-show="!loading">
+          <form method="get" onsubmit="return false;">
             <div class="input-group input-group-lg">
-              <input type="text" class="form-control" aria-describedby="sizing-addon1" autofocus>
+              <input id="search-input" type="text" name="search" class="form-control" aria-describedby="sizing-addon1"  tabindex="1" autocomplete="off" autofocus :disabled="displayError"/>
               <span class="input-group-btn">
-                <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                <button id="search-submit" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
               </span>
             </div>
           </form>
@@ -34,6 +34,16 @@
     </header>
 
     <main>
+      <div class="results-loading" v-if="searchInProgress">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+      </div>
+      <div class="alert alert-danger" v-if="displayError">
+        Une erreur est survenue. Pour nous aider à la résoudre, merci de saisir un rapport d'erreur à <a href="https://github.com/ed-search/web/issues/new">cette adresse</a>.
+      </div>
       <section id="results">
       </section>
     </main>
@@ -52,9 +62,9 @@
       </nav>
     </footer>
 
-    <script type="text/javascript" src="js/vue.min.js"></script>
-    <script type="text/javascript" src="js/rx.lite.min.js"></script>
-    <script type="text/javascript" src="js/rx.dom.min.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="vue.min.js"></script>
+    <script type="text/javascript" src="rx.lite.min.js"></script>
+    <script type="text/javascript" src="rx.dom.min.js"></script>
+    <script type="text/javascript" src="main.js"></script>
   </body>
 </html>

@@ -8,8 +8,8 @@ function buildJs(folder) {
   return gulp.src(['src/' + folder + '/**/*.js'])
     .pipe(sourcemaps.init())
     .pipe(flatten({ subPath: [1, -1]}))
-    .pipe(sourcemaps.write('maps'))
-    .pipe(gulp.dest('dist/js'));
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('dist/'));
 }
 
 module.exports = buildJs;

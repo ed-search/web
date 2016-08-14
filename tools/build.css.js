@@ -15,7 +15,7 @@ gulp.task('build.css', function(){
   return gulp.src('src/site/**/*.scss')
     .pipe(sourcemaps.init())
     .pipe(sass(sassOptions).on('error', sass.logError))
-    .pipe(sourcemaps.write('maps'))
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('dist'));
 });
 
