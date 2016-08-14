@@ -1,3 +1,9 @@
+/**
+ * Site JS File
+ * Create the search engine webworker, bind events with the search field and manage communication between the 2.
+ * A VuJS component is tasked to update the view
+ */
+
 ;(function(document, Vue, Rx){
 
 /**
@@ -13,6 +19,7 @@
  * @property {boolean}   loading           - while true display loading animation
  * @property {string}    loadingStep       - switch loading message (download, indexing)
  * @property {number}    loadingProgress   - update progress bar if supported by loadingStep
+ *                                           (integer : progressbar, null: spinner, undefined: nothing)
  * @property {boolean}   atLeastOneSearch  - true if the user has started at least one search
  * @property {Article[]} searchResult      - display search results
  * @property {boolean}   searchInProgress  - if the webworker is computing the result of the search query
@@ -23,7 +30,7 @@
 var appState = {
   loading: true,
   loadingStep: 'download',
-  loadingProgress: 0,
+  loadingProgress: undefined,
   atLeastOneSearch: false,
   searchResult: [],
   searchInProgress: false,
@@ -87,36 +94,38 @@ searchEngineWorker.sendMessage = function(message) {
   logInfo('onNext', message);
   this.onNext(message);
 };
-var searchEngineSharedObservable = searchEngineWorker.share();
+var searchEngineSharedObservable = searchEngineWorker
+  .share()
+  .map(function(e) {
+    return e.data;
+  });
 
 // Listen for loading (database downloading and indexing) messages from SearchEngine WebWorker
-searchEngineSharedObservable.filter(function(item){
-  return item.data.event === 'loading';
+searchEngineSharedObservable.filter(function(data) {
+  return data.event === 'loading';
 }).subscribe(
-  function (e) {
-    logInfo('loading', e.data);
-    appState.loadingProgress = e.data.value;
-    appState.loadingStep = e.data.type;
-    if (appState.loadingStep == 'ready') {  // Final step when SearchEngine is ready
-      appState.loading = false;
-    }
+  function (data) {
+    logInfo('loading', data);
+    appState.loadingProgress = data.value;
+    appState.loadingStep = data.type;
+    appState.loading = data.type !== 'ready';  // Final step when SearchEngine is ready
   },
   handleError
 );
 
 // Listen for search result messages from SearchEngine WebWorker
-searchEngineSharedObservable.filter(function(item){
-  return item.data.event === 'result';
+searchEngineSharedObservable.filter(function(data) {
+  return data.event === 'result';
 }).subscribe(
-  function (e) {
-    logInfo('result', e.data);
-    appState.searchResult = e.data.value;
+  function (data) {
+    logInfo('result', data);
+    appState.searchResult = data.value;
   },
   handleError
 );
 
 // Trigger SearchEngine WebWorker indexation.
-searchEngineWorker.sendMessage({action: 'startEngine', url: 'https://raw.githubusercontent.com/ed-search/database/data/articles.json'});
+searchEngineWorker.sendMessage({action: 'start', url: 'https://raw.githubusercontent.com/ed-search/database/data/articles.json'});
 
 
 /**
@@ -155,13 +164,13 @@ Rx.Observable.merge([clickSubmitStream, enterKeyPressedStream, keyUpThrottledSea
   .subscribe(function(searchTerms) {
     // Trigger search
     appState.latestSearchTerms = searchTerms;
-    if (!appState.searchInProgress) {
+    if (!appState.searchInProgress && searchTerms) {  // If no search in progress, launch one
       appState.searchInProgress = true;
       searchEngineWorker.sendMessage({action: 'search', value: searchTerms});
-    } else if (!appState.latestSearchTerms) {
+    } else if (!searchTerms) {  // If empty search terms, cancel search
       appState.searchInProgress = false;
       logInfo('empty terms - stop search');
-    } else {
+    } else {  // Else if search already in progress, stores term to launch search when the current one ends
       logInfo('search already in progress - storing term', '"'+searchTerms+'"');
     }
   });

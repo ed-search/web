@@ -17,7 +17,18 @@
         <p>Retrouvez facilement un article dans votre collection</p>
         <section id="loading" v-if="loading">
           <div class="">
-            {{ loadingStep }}
+            <p v-if="loadingStep == 'download'"><em>1/2 Téléchargement de la base de données</em></p>
+            <p v-if="loadingStep == 'indexing'"><em>2/2 Construction de l'index</em></p>
+            <div class="progress" v-if="loadingProgress !== null && loadingProgress !== undefined">
+              <div class="progress-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: {{ loadingProgress }}%;">
+                {{ loadingProgress }}%
+              </div>
+            </div>
+            <div class="spinner" v-if="loadingProgress === null">
+              <div class="bounce1"></div>
+              <div class="bounce2"></div>
+              <div class="bounce3"></div>
+            </div>
           </div>
         </section>
         <section id="search" v-show="!loading">
