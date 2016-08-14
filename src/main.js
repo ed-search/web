@@ -82,7 +82,7 @@ function handleError(e) {
  */
 
 // Create SearchEngine in a WebWorker
-var searchEngineWorker = Rx.DOM.fromWorker('search.js');
+var searchEngineWorker = Rx.DOM.fromWorker('worker.js');
 searchEngineWorker.sendMessage = function(message) {
   logInfo('onNext', message);
   this.onNext(message);

@@ -3,7 +3,7 @@
 var gulp = require('gulp');
 
 gulp.task('build.html', function(){
-  return gulp.src('src/site/**/*.html')
+  return gulp.src('src/**/*.html')
     .pipe(gulp.dest('dist'));
 });
 

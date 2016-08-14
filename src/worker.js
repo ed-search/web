@@ -78,7 +78,7 @@ function SearchEngine(messageBus) {
   };
 };
 
-var edToWebPageMessageBus = {
+var toWebPageMessageBus = {
   sendDownloadEvent: function(downloaded) {
     logAndPostMessage({event: 'loading', type: 'download', value: downloaded});
   },
@@ -97,7 +97,7 @@ var edToWebPageMessageBus = {
   }
 };
 
-var edSearchEngine = new SearchEngine(edToWebPageMessageBus);
+var edSearchEngine = new SearchEngine(toWebPageMessageBus);
 
 logInfo('started');
 

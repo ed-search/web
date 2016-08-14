@@ -1,7 +1,7 @@
 "use strict";
 
 var gulp = require('gulp');
-var server = require('./utils/server');
+var server = require('./server');
 
 gulp.task('serve.dist', function() {
   server.listen();

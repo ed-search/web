@@ -14,8 +14,7 @@ gulp.task('build', function() {
     'clean',
     'build.html',
     'copy',
-    'build.js.site',
-    'build.js.worker',
+    'build.js',
     'build.css'
   );
 });
@@ -28,8 +27,7 @@ gulp.task('serve', function() {
     'clean',
     'build.html',
     'copy',
-    'build.js.site',
-    'build.js.worker',
+    'build.js',
     'build.css',
     'serve.dist'
   );
@@ -43,8 +41,7 @@ gulp.task('serve.watch', function() {
     'clean',
     'build.html',
     'copy',
-    'build.js.site',
-    'build.js.worker',
+    'build.js',
     'build.css',
     'serve.dist',
     'watch'

@@ -12,7 +12,7 @@ var sassOptions = {
 };
 
 gulp.task('build.css', function(){
-  return gulp.src('src/site/**/*.scss')
+  return gulp.src('src/**/*.scss')
     .pipe(sourcemaps.init())
     .pipe(sass(sassOptions).on('error', sass.logError))
     .pipe(sourcemaps.write('.'))
