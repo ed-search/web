@@ -116,8 +116,8 @@ function SearchEngine(workerEventEmitter) {
       workerEventEmitter({event: 'loading', type: 'ready', value: null});
     },
     /** @function sendIndexingEvent - called when search engine has finished to compute a search query. send results */
-    sendResultEvent: function(articles) {
-      workerEventEmitter({event: 'result', value: articles});
+    sendResultEvent: function(articles, term) {
+      workerEventEmitter({event: 'result', value: articles, term: term});
     },
     /** @function sendIndexingEvent - called when an error occured. kills the webworker. */
     sendErrorEvent: function(message) {
@@ -130,24 +130,68 @@ function SearchEngine(workerEventEmitter) {
   this.loaded = false;
 
   // The lunr index
-  this._index = lunr(function(){
-    this.field('title', {boost: 10})
-    this.field('body')
-    this.ref('id')
+  this._index = lunr(function() {
+    this.field('title', {boost: 10});
+    this.field('keywords', {boost: 5});
+    this.field('description');
+    this.ref('id');
+
+    /**
+     * Lunr returns a doc { ref: id, score: relevance } after search
+     * index plugin to :
+     *     - override the default `add` method to keep a reference to each full document in the index in a
+     *       new `database` attribute
+     *     - override the default search method to returns the full document with the score instead of the lunr
+     *       default doc
+     */
+    this.use(function(idx) {
+      idx.database = {};  // Map to find a document by its id
+
+      // Override default add method to keep reference to all the documents in the index by their id.
+      var refOriginalAdd = idx.add;
+      idx.add = function(doc, emitEvent) {
+        idx.database[doc[idx._ref]] = doc;
+        refOriginalAdd.apply(idx, [doc, emitEvent]);
+      };
+
+      // Override default search method to returns the real document instead of the lunr result doc
+      var refOriginalSearch = idx.search;
+      idx.search = function (query) {
+        return refOriginalSearch.call(idx, query).map(function(doc) {
+          var article = idx.database[doc.ref];
+          article.score = doc.score;
+          return article;
+        });
+      };
+    });
   });
 
   /** Build the lunr index. Called when the data have been downloaded */
   this._build = function(articles) {
-    this.emitter.sendIndexingEvent(0);
-    console.log(articles);
-    this.emitter.sendReadyEvent();
+    var databaseLength = articles.length;
+    var nbIndexed = 0;  // nb of document already indexed
+    var lastProgress = null;  // Last progress value send to the webpage
+
+    articles.forEach(function(article) {
+      this._index.add(article, false);
+      nbIndexed++;
+
+      // Only send indexation progress back to the page if it has changed
+      var progress = Math.floor((nbIndexed / databaseLength) * 100);
+      if (progress !== lastProgress) {
+        this.emitter.sendIndexingEvent(progress);
+        lastProgress = progress;
+      }
+    }.bind(this));
+
     this.loaded = true;
+    this.emitter.sendReadyEvent();
   };
 
-  /** Trigger a search query and returns the results */
+  /** Trigger a search query and emit the results */
   this.search = function(term) {
     if (!this.loaded) this.emitter.sendErrorEvent('Searchengine not started yet');
-    return this._index.search(term);
+    this.emitter.sendResultEvent(JSON.stringify(this._index.search(term)), term);
   };
 
   /** Starts the search engine (download data, build index and switch state to loaded) */
@@ -175,6 +219,7 @@ onmessage = function(e) {
       edSearchEngine.start(new UrlDataLoader(e.data.url));
       break;
     case 'search':
+      edSearchEngine.search(e.data.value);
       break;
     default:
       logInfo('unrecognized action ', e.data.action);

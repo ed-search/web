@@ -116,10 +116,20 @@ searchEngineSharedObservable.filter(function(data) {
 // Listen for search result messages from SearchEngine WebWorker
 searchEngineSharedObservable.filter(function(data) {
   return data.event === 'result';
+}).map(function(data) {
+  data.value = JSON.parse(data.value);
+  return data;
 }).subscribe(
   function (data) {
     logInfo('result', data);
-    appState.searchResult = data.value;
+    if (data.term === appState.latestSearchTerms) {
+      logInfo('result display', '"' + data.term + '"');
+      appState.searchInProgress = false;
+      appState.searchResult = data.value;
+    } else {
+      logInfo('result does not match latest search term. Trigger new one', {received: data.term, latest: appState.latestSearchTerms});
+      searchEngineWorker.sendMessage({action: 'search', value: appState.latestSearchTerms});
+    }
   },
   handleError
 );
@@ -169,9 +179,11 @@ Rx.Observable.merge([clickSubmitStream, enterKeyPressedStream, keyUpThrottledSea
       searchEngineWorker.sendMessage({action: 'search', value: searchTerms});
     } else if (!searchTerms) {  // If empty search terms, cancel search
       appState.searchInProgress = false;
+      appState.searchResult = [];
       logInfo('empty terms - stop search');
     } else {  // Else if search already in progress, stores term to launch search when the current one ends
-      logInfo('search already in progress - storing term', '"'+searchTerms+'"');
+      appState.searchInProgress = true;
+      logInfo('search already in progress - storing term', '"' + searchTerms + '"');
     }
   });
 

@@ -12,18 +12,25 @@
 
     <header>
       <nav v-bind:class="{ 'navbar navbar-default': atLeastOneSearch, 'jumbotron': !atLeastOneSearch }">
-        <a href="/"><img src="img/logo.jpg" /></a>
+        <a href="/">
+          <img src="img/logo.jpg" />
+        </a>
+
         <h1>Search Engine</h1>
         <p>Retrouvez facilement un article dans votre collection</p>
+
         <section id="loading" v-if="loading">
           <div class="">
             <p v-if="loadingStep == 'download'"><em>1/2 Téléchargement de la base de données</em></p>
             <p v-if="loadingStep == 'indexing'"><em>2/2 Construction de l'index</em></p>
+
+            <!-- Current loading step supports progressbar -->
             <div class="progress" v-if="loadingProgress !== null && loadingProgress !== undefined">
               <div class="progress-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: {{ loadingProgress }}%;">
                 {{ loadingProgress }}%
               </div>
             </div>
+            <!-- Current loading step does not support progressbar - display spinner -->
             <div class="spinner" v-if="loadingProgress === null">
               <div class="bounce1"></div>
               <div class="bounce2"></div>
@@ -31,6 +38,7 @@
             </div>
           </div>
         </section>
+
         <section id="search" v-show="!loading">
           <form method="get" onsubmit="return false;">
             <div class="input-group input-group-lg">
@@ -45,6 +53,7 @@
     </header>
 
     <main>
+      <!-- spinner displayed when search in progress -->
       <div class="results-loading" v-if="searchInProgress">
         <div class="spinner">
           <div class="bounce1"></div>
@@ -52,10 +61,21 @@
           <div class="bounce3"></div>
         </div>
       </div>
+
+      <!-- Alert displayed in case of an error in the webworker -->
       <div class="alert alert-danger" v-if="displayError">
         Une erreur est survenue. Pour nous aider à la résoudre, merci de saisir un rapport d'erreur à <a href="https://github.com/ed-search/web/issues/new">cette adresse</a>.
       </div>
+
+      <!-- Search results section -->
       <section id="results">
+        <div id="results-empty" v-if="latestSearchTerms && searchResult.length === 0 && !searchInProgress">
+          <p>Aucun résultat trouvé pour "<em>{{ latestSearchTerms }}</em>"</p>
+        </div>
+
+        <article v-for="article in searchResult">
+          {{ article.title }}
+        </article>
       </section>
     </main>
 
