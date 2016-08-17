@@ -191,7 +191,7 @@ function SearchEngine(workerEventEmitter) {
   /** Trigger a search query and emit the results */
   this.search = function(term) {
     if (!this.loaded) this.emitter.sendErrorEvent('Searchengine not started yet');
-    this.emitter.sendResultEvent(JSON.stringify(this._index.search(term)), term);
+    this.emitter.sendResultEvent(this._index.search(term), term);
   };
 
   /** Starts the search engine (download data, build index and switch state to loaded) */

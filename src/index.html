@@ -73,13 +73,26 @@
           <p>Aucun résultat trouvé pour "<em>{{ latestSearchTerms }}</em>"</p>
         </div>
 
-        <article v-for="article in searchResult">
-          {{ article.title }}
+        <article class="results-item" v-for="article in searchResult">
+            <img :src="article|articleToCover" />
+            <h2><a :href="article.url">{{ article.title }}</a></h2>
+            <h3>{{ article.type | typeToMagName }} - {{ article.displayed_date }} - p{{ article.page }}</h3>
+            <p>{{ article.description }}</p>
+            <span
+            <ul v-if="article.author || (article.keywords && article.keywords.length)">
+              <li v-if="article.author"><span class="glyphicon glyphicon-user"></span> {{ article.author }}</span></li>
+              <li v-if="article.author && article.keywords && article.keywords.length"> - </li>
+              <li v-if="article.keywords && article.keywords.length">
+                <template v-for="(index, word) in article.keywords">
+                  {{ word }}<span v-if="index != (article.keywords.length - 1)">, </span>
+                </template>
+              </li>
+            </ul>
         </article>
       </section>
     </main>
 
-    <footer>
+    <footer v-show="!atLeastOneSearch">
       <nav class="navbar navbar-default navbar-fixed-bottom">
         <div class="container-fluid">
           <ul class="nav navbar-nav">

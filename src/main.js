@@ -13,6 +13,22 @@
  */
 
 /**
+ * Mapping of a type to its magazine name
+ */
+var typeToMagNameMapping = {
+  glmf: 'GNU Linux Magazine France',
+  glmfhs: 'GNU Linux Magazine France Hors Séries',
+  lp: 'Linux Pratique',
+  lphs: 'Linux Pratique Hors Séries',
+  le: 'Linux Essentiel',
+  lehs: 'Linux Essentiel Hors Séries',
+  misc: 'MISC',
+  mischs: 'MISC Hors Séries',
+  os: 'Open Silicium',
+  hm: 'Hackable Magazine'
+};
+
+/**
  * Object used in VueJS Component to bind values to the view
  *
  * @namespace
@@ -37,6 +53,20 @@ var appState = {
   latestSearchTerms: null,
   displayError: false
 };
+
+// Register vuejs filter to display a magazine name from its type
+Vue.filter('typeToMagName', function (value) {
+  if (typeToMagNameMapping.hasOwnProperty(value)) {
+    return typeToMagNameMapping[value];
+  }
+  return 'n/a';
+});
+
+// Register vuejs filter to get the cover url of an article
+Vue.filter('articleToCover', function (article) {
+  var magNumber = "000".substring(0, 3 - ("" + article.number).length) + article.number;
+  return 'https://raw.githubusercontent.com/ed-search/database/data/' + article.type + '/' + magNumber + '.jpg';
+});
 
 // VueJS component to update HTML when object appState changes
 var appComponent = new Vue({
@@ -116,9 +146,6 @@ searchEngineSharedObservable.filter(function(data) {
 // Listen for search result messages from SearchEngine WebWorker
 searchEngineSharedObservable.filter(function(data) {
   return data.event === 'result';
-}).map(function(data) {
-  data.value = JSON.parse(data.value);
-  return data;
 }).subscribe(
   function (data) {
     logInfo('result', data);
