@@ -1,7 +1,6 @@
 "use strict";
 
 var gulp = require('gulp');
-var flatten = require('gulp-flatten');
 var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('build.js', function(){

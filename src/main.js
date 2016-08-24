@@ -4,7 +4,10 @@
  * A VuJS component is tasked to update the view
  */
 
-;(function(document, Vue, Rx){
+;(function(document, Vue, Rx, config){
+
+// Base URL of the database with cover images and articles text
+var baseDatabaseUrl = config.database.replace(/\/$/g, '');
 
 /**
  * -----------------------------------------------
@@ -65,7 +68,7 @@ Vue.filter('typeToMagName', function (value) {
 // Register vuejs filter to get the cover url of an article
 Vue.filter('articleToCover', function (article) {
   var magNumber = "000".substring(0, 3 - ("" + article.number).length) + article.number;
-  return 'https://raw.githubusercontent.com/ed-search/database/data/' + article.type + '/' + magNumber + '.jpg';
+  return baseDatabaseUrl + "/" + article.type + '/' + magNumber + '.jpg';
 });
 
 // VueJS component to update HTML when object appState changes
@@ -105,6 +108,7 @@ function logInfo(message, value, color, error) {
  * @param {Error} e - the error raised
  */
 function handleError(e) {
+  appState.loading = false;
   appState.displayError = true;
   appState.searchInProgress = false;
   appState.searchResult = [];
@@ -162,7 +166,7 @@ searchEngineSharedObservable.filter(function(data) {
 );
 
 // Trigger SearchEngine WebWorker indexation.
-searchEngineWorker.sendMessage({action: 'start', url: 'https://raw.githubusercontent.com/ed-search/database/data/articles.json'});
+searchEngineWorker.sendMessage({action: 'start', url: baseDatabaseUrl + '/articles.json'});
 
 
 /**
@@ -214,4 +218,4 @@ Rx.Observable.merge([clickSubmitStream, enterKeyPressedStream, keyUpThrottledSea
     }
   });
 
-})(document, Vue, Rx);
+})(document, Vue, Rx, edConfig);

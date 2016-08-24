@@ -39,7 +39,7 @@
           </div>
         </section>
 
-        <section id="search" v-show="!loading">
+        <section id="search" v-show="!loading && !displayError">
           <form method="get" onsubmit="return false;">
             <div class="input-group input-group-lg">
               <input id="search-input" type="text" name="search" class="form-control" aria-describedby="sizing-addon1"  tabindex="1" autocomplete="off" autofocus :disabled="displayError"/>
@@ -106,6 +106,7 @@
       </nav>
     </footer>
 
+    <script type="text/javascript">var edConfig = @@envConfig;</script>
     <script type="text/javascript" src="vue.min.js"></script>
     <script type="text/javascript" src="rx.lite.min.js"></script>
     <script type="text/javascript" src="rx.dom.min.js"></script>
