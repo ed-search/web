@@ -4,6 +4,8 @@ set -e # Exit with nonzero exit code if anything fails
 SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
+rm -rf dist
+
 function doCompile {
     gulp build
 }
@@ -21,8 +23,8 @@ SHA=`git rev-parse --verify HEAD`
 
 # Clone the existing data branch for this repo into dist/
 # Create a new empty branch if data doesn't exist yet (should only happen on first deply)
-git clone $REPO tmp
-cd tmp
+git clone $REPO dist
+cd dist
 if [[ `git branch -a | grep "remotes/origin/$TARGET_BRANCH"` ]]; then
   git checkout -t origin/$TARGET_BRANCH
   echo "Existing $TARGET_BRANCH branch"
@@ -34,13 +36,13 @@ fi
 
 # Clean out existing contents
 cd ..
-rm -rf tmp/* || exit 0
+rm -rf dist/* || exit 0
 
 # Run our compile script
 doCompile
 
 # Now let's go have some fun with the cloned repo
-cd tmp
+cd dist
 git config user.name "Travis CI"
 git config user.email "$COMMIT_AUTHOR_EMAIL"
 
@@ -68,5 +70,5 @@ eval `ssh-agent -s`
 ssh-add deploy_key
 
 # Now that we're all set up, we can push.
-cd tmp
+cd dist
 git push $SSH_REPO $TARGET_BRANCH
