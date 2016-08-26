@@ -1,0 +1,26 @@
+language: node_js
+node_js:
+  - stable
+
+install:
+  - npm install -g gulp
+  - npm install
+
+script:
+  - gulp build
+
+cache:
+  directories:
+    - node_modules
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: ./deploy.sh
+  on:
+    branch: master
+
+env:
+  global:
+  - ENCRYPTION_LABEL: "a9d8d3a857ac"
+  - COMMIT_AUTHOR_EMAIL: "jonathan.bouzekri@gmail.com"
