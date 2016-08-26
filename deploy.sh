@@ -2,7 +2,7 @@
 set -e # Exit with nonzero exit code if anything fails
 
 SOURCE_BRANCH="master"
-TARGET_BRANCH="gh-pages"
+TARGET_BRANCH="master"
 
 rm -rf dist
 
@@ -17,25 +17,15 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]
 fi
 
 # Save some useful information
-REPO=`git config remote.origin.url`
+REPO="https://github.com/ed-search/ed-search.github.io.git"
 SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}
 SHA=`git rev-parse --verify HEAD`
 
 # Clone the existing data branch for this repo into dist/
 # Create a new empty branch if data doesn't exist yet (should only happen on first deply)
 git clone $REPO dist
-cd dist
-if [[ `git branch -a | grep "remotes/origin/$TARGET_BRANCH"` ]]; then
-  git checkout -t origin/$TARGET_BRANCH
-  echo "Existing $TARGET_BRANCH branch"
-else
-  git checkout --orphan $TARGET_BRANCH
-  git reset --hard
-  echo "New $TARGET_BRANCH branch"
-fi
 
 # Clean out existing contents
-cd ..
 rm -rf dist/* || exit 0
 
 # Run our compile script

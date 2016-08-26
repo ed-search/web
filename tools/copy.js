@@ -8,7 +8,8 @@ var copyConf = [
   { files: ['node_modules/rx-dom/dist/rx.dom.js', 'node_modules/rx-dom/dist/rx.dom.min.js', 'node_modules/rx-dom/dist/rx.dom.map'], dist: '' },
   { files: ['node_modules/lunr/lunr.min.js'], dist: '' },
   { files: ['node_modules/bootstrap-sass/assets/fonts/bootstrap/*'], dist: 'fonts' },
-  { files: ['src/img/**/*'], dist: 'img' }
+  { files: ['src/img/**/*'], dist: 'img' },
+  { files: ['src/README.md'], dist: '' }
 ];
 
 gulp.task('copy', function () {
