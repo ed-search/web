@@ -73,21 +73,24 @@
           <p>Aucun résultat trouvé pour "<em>{{ latestSearchTerms }}</em>"</p>
         </div>
 
-        <article class="results-item" v-for="article in searchResult">
-            <img :src="article|articleToCover" />
-            <h2><a :href="article.url">{{ article.title }}</a></h2>
-            <h3>{{ article.type | typeToMagName }} - {{ article.displayed_date }} - p{{ article.page }}</h3>
-            <p>{{ article.description }}</p>
-            <span
-            <ul v-if="article.author || (article.keywords && article.keywords.length)">
-              <li v-if="article.author"><span class="glyphicon glyphicon-user"></span> {{ article.author }}</span></li>
-              <li v-if="article.author && article.keywords && article.keywords.length"> - </li>
-              <li v-if="article.keywords && article.keywords.length">
-                <template v-for="(index, word) in article.keywords">
-                  {{ word }}<span v-if="index != (article.keywords.length - 1)">, </span>
-                </template>
-              </li>
-            </ul>
+        <article class="results-item clearfix" v-for="article in searchResult">
+            <div class="results-item-cover">
+              <img :src="article|articleToCover" />
+            </div>
+            <div class="results-item-detail">
+              <h2><a :href="article.url" target="_blank">{{ article.title }}</a></h2>
+              <h3>{{ article.type | typeToMagName }} - {{ article.displayed_date }} - p{{ article.page }}</h3>
+              <p>{{ article.description }}</p>
+              <ul v-if="article.author || (article.keywords && article.keywords.length)" class="list-inline">
+                <li v-if="article.author"><span class="glyphicon glyphicon-user"></span> {{ article.author }}</span></li>
+                <li v-if="article.author && article.keywords && article.keywords.length"> - </li>
+                <li v-if="article.keywords && article.keywords.length">
+                  <template v-for="(index, word) in article.keywords">
+                    {{ word }}<span v-if="index != (article.keywords.length - 1)">, </span>
+                  </template>
+                </li>
+              </ul>
+            </div>
         </article>
       </section>
     </main>
