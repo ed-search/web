@@ -79,7 +79,7 @@
             </div>
             <div class="results-item-detail">
               <h2><a :href="article.url" target="_blank">{{ article.title }}</a></h2>
-              <h3>{{ article.type | typeToMagName }} - {{ article.displayed_date }} - p{{ article.page }}</h3>
+              <h3>{{ article.type | typeToMagName }} n°{{ article.number }} - {{ article.displayed_date }} - p{{ article.page }}</h3>
               <p>{{ article.description }}</p>
               <ul v-if="article.author || (article.keywords && article.keywords.length)" class="list-inline">
                 <li v-if="article.author"><span class="glyphicon glyphicon-user"></span> {{ article.author }}</span></li>
